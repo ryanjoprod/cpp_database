@@ -2,7 +2,7 @@
 #define BANKTRANSACTION_H
 
 #include "BankAccount.h"
-#include <mariadb/mysql.h>
+#include <mariadb/conncpp.hpp>
 #include <string>
 
 class BankAccount;
@@ -22,7 +22,7 @@ class BankTransaction
     void message(std::string);
 
   private:
-    MYSQL* db_conn;
+    std::unique_ptr<sql::Connection> conn = nullptr;
 };
 
 #endif

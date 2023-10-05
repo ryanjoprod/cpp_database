@@ -1,9 +1,8 @@
 #include <iostream>
-#include <ostream>
 #include <sstream>
 #include <iomanip>
 #include <cstdlib>
-#include <mariadb/mysql.h>
+#include <mariadb/conncpp.hpp>
 #include <string>
 
 #include "BankAccount.h"
@@ -36,12 +35,12 @@ int mainMenu()
 
 int main(int argc, char** argv)
 {
-  BankTransaction* bt = new BankTransaction("localhost", "ryan", "S!llyb0b1982", "fakeBank");
+  BankTransaction* bankTransaction = new BankTransaction(host, user, password, database);
 
   int choice;
-  int acno;
-  std::string fname, lname;
-  double bal;
+  int accountNumber;
+  std::string firstName, lastName;
+  double balance;
 
   while (1)
   {
@@ -52,53 +51,53 @@ int main(int argc, char** argv)
     switch (choice)
     {
       case PRINT:
-        bt->printAllAccount();
+        bankTransaction->printAllAccount();
         break;
       case NEW:
         std::cout << "\nEnter account no, first name, last name, balance: " << std::endl << "? ";
-        std::cin >> acno;
-        std::cin >> fname;
-        std::cin >> lname;
-        std::cin >> bal;
+        std::cin >> accountNumber;
+        std::cin >> firstName;
+        std::cin >> lastName;
+        std::cin >> balance;
 
-        if (acno < 1)
+        if (accountNumber < 1)
         {
           std::cout << "Invalid account number." << std::endl;
           break;
         }
 
-        bt->createAccount(new BankAccount(acno, fname, lname, bal));
+        bankTransaction->createAccount(new BankAccount(accountNumber, firstName, lastName, balance));
         break;
       case WITHDRAW:
         std::cout << "\nEnter account no, amount to Withdraw" << std::endl << "? ";
-        std::cin >> acno;
-        std::cin >> bal;
+        std::cin >> accountNumber;
+        std::cin >> balance;
 
-        if (bal < 0)
+        if (balance < 0)
         {
           std::cout << "Invalid Amount." << std::endl;
           break;
         }
         
-        bt->withdraw(acno, bal);
+        bankTransaction->withdraw(accountNumber, balance);
         break;
       case DEPOSIT:
         std::cout << "\nEnter account no, amount to deposit " << std::endl << "? ";
-        std::cin >> acno;
-        std::cin >> bal;
+        std::cin >> accountNumber;
+        std::cin >> balance;
         
-        if (bal < 0) 
+        if (balance < 0) 
         {
           std::cout << "Invalid amount." << std::endl;
           break;
         }
         
-        bt->deposit(acno, bal);
+        bankTransaction->deposit(accountNumber, balance);
         break;
       case CLOSE:
         std::cout << "\nEnter account number to close account " << std::endl << "? ";
-        std::cin >> acno;
-        bt->closeAccount(acno);
+        std::cin >> accountNumber;
+        bankTransaction->closeAccount(accountNumber);
         break;
       default:
         std::cerr << "Invalid choice!" << std::endl;
