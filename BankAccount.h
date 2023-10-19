@@ -6,8 +6,6 @@
 class BankAccount 
 {
   public:
-    static const int MAX_SIZE = 30;
-
     BankAccount(int = 0, std::string = "", std::string = "", double = 0.0);
     ~BankAccount();
 
@@ -23,8 +21,8 @@ class BankAccount
 
   private:
     int accountNumber;
-    char firstName[MAX_SIZE];
-    char lastName[MAX_SIZE];
+    std::string firstName;
+    std::string lastName;
     double balance;
 };
 
