@@ -3,6 +3,7 @@
 
 #include "BankAccount.h"
 #include <mariadb/conncpp.hpp>
+#include <memory>
 #include <string>
 
 class BankAccount;
@@ -10,19 +11,16 @@ class BankAccount;
 class BankTransaction 
 {
   public:
-    BankTransaction(const std::string = "localhost", const std::string = "", const std::string = "", const std::string = "");
+    BankTransaction();
     ~BankTransaction();
 
-    void createAccount(BankAccount*);
-    void closeAccount(int);
-    void deposit(int, double);
-    void withdraw(int, double);
-    BankAccount* getAccount(int);
-    void printAllAccount();
+    void createAccount(const std::unique_ptr<sql::Connection>&, BankAccount*);
+    void closeAccount(const std::unique_ptr<sql::Connection>&, int);
+    void deposit(const std::unique_ptr<sql::Connection>&, int, double);
+    void withdraw(const std::unique_ptr<sql::Connection>&, int, double);
+    BankAccount* getAccount(const std::unique_ptr<sql::Connection>&, int);
+    void printAllAccounts(const std::unique_ptr<sql::Connection>&);
     void message(std::string);
-
-  private:
-    std::unique_ptr<sql::Connection> conn = nullptr;
 };
 
 #endif

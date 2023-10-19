@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ostream>
 #include <sstream>
 #include <iomanip>
 #include <cstdlib>
@@ -26,7 +27,8 @@ int mainMenu()
     << "3 - Withdraw" << std::endl
     << "4 - Deposit" << std::endl
     << "5 - Close Account" <<std::endl
-    << "6 - End Transaction" << std::endl;
+    << "6 - End Transaction" << std::endl
+    << "? " << std::endl;
 
   int ch;
   std::cin >> ch;
@@ -35,75 +37,91 @@ int mainMenu()
 
 int main(int argc, char** argv)
 {
-  BankTransaction* bankTransaction = new BankTransaction(host, user, password, database);
+  try {
+    // Instantiate driver
+    sql::Driver* driver = sql::mariadb::get_driver_instance();
+    
+    // Configure connection
+    sql::SQLString url("jdbc:mariadb://localhost:3306/fakeBank");
+    sql::Properties properties({{"user", USER}, {"password", PASSWORD}});
 
-  int choice;
-  int accountNumber;
-  std::string firstName, lastName;
-  double balance;
+    // Establish connection
+    std::unique_ptr<sql::Connection> connection(driver->connect(url, properties));
+  
+    // BankTransaction* bankTransaction = new BankTransaction(host, user, password, database);
+    BankTransaction* bankTransaction = new BankTransaction();
 
-  while (1)
-  {
-    choice = mainMenu();
+    int choice;
+    int accountNumber;
+    std::string firstName, lastName;
+    double balance;
 
-    if (choice == END) break;
-
-    switch (choice)
+    while (1)
     {
-      case PRINT:
-        bankTransaction->printAllAccount();
-        break;
-      case NEW:
-        std::cout << "\nEnter account no, first name, last name, balance: " << std::endl << "? ";
-        std::cin >> accountNumber;
-        std::cin >> firstName;
-        std::cin >> lastName;
-        std::cin >> balance;
+      choice = mainMenu();
 
-        if (accountNumber < 1)
-        {
-          std::cout << "Invalid account number." << std::endl;
-          break;
-        }
+      if (choice == END) break;
 
-        bankTransaction->createAccount(new BankAccount(accountNumber, firstName, lastName, balance));
-        break;
-      case WITHDRAW:
-        std::cout << "\nEnter account no, amount to Withdraw" << std::endl << "? ";
-        std::cin >> accountNumber;
-        std::cin >> balance;
+      switch (choice)
+      {
+        case PRINT:
+          bankTransaction->printAllAccounts(std::move(connection));
+          break;
+        case NEW:
+          std::cout << "\nEnter account no, first name, last name, balance: " << std::endl << "? ";
+          std::cin >> accountNumber;
+          std::cin >> firstName;
+          std::cin >> lastName;
+          std::cin >> balance;
 
-        if (balance < 0)
-        {
-          std::cout << "Invalid Amount." << std::endl;
+          if (accountNumber < 1)
+          {
+            std::cout << "Invalid account number." << std::endl;
+            break;
+          }
+
+          bankTransaction->createAccount(std::move(connection), new BankAccount(accountNumber, firstName, lastName, balance));
           break;
-        }
-        
-        bankTransaction->withdraw(accountNumber, balance);
-        break;
-      case DEPOSIT:
-        std::cout << "\nEnter account no, amount to deposit " << std::endl << "? ";
-        std::cin >> accountNumber;
-        std::cin >> balance;
-        
-        if (balance < 0) 
-        {
-          std::cout << "Invalid amount." << std::endl;
+        case WITHDRAW:
+          std::cout << "\nEnter account no, amount to Withdraw" << std::endl << "? ";
+          std::cin >> accountNumber;
+          std::cin >> balance;
+
+          if (balance < 0)
+          {
+            std::cout << "Invalid Amount." << std::endl;
+            break;
+          }
+          
+          bankTransaction->withdraw(std::move(connection), accountNumber, balance);
           break;
-        }
-        
-        bankTransaction->deposit(accountNumber, balance);
-        break;
-      case CLOSE:
-        std::cout << "\nEnter account number to close account " << std::endl << "? ";
-        std::cin >> accountNumber;
-        bankTransaction->closeAccount(accountNumber);
-        break;
-      default:
-        std::cerr << "Invalid choice!" << std::endl;
-        break;
+        case DEPOSIT:
+          std::cout << "\nEnter account no, amount to deposit " << std::endl << "? ";
+          std::cin >> accountNumber;
+          std::cin >> balance;
+          
+          if (balance < 0) 
+          {
+            std::cout << "Invalid amount." << std::endl;
+            break;
+          }
+          
+          bankTransaction->deposit(std::move(connection), accountNumber, balance);
+          break;
+        case CLOSE:
+          std::cout << "\nEnter account number to close account " << std::endl << "? ";
+          std::cin >> accountNumber;
+          bankTransaction->closeAccount(std::move(connection), accountNumber);
+          break;
+        default:
+          std::cerr << "Invalid choice!" << std::endl;
+          break;
+      }
     }
   }
-
+  catch(sql::SQLException& e) {
+    std::cerr << "Database connection failure: " << e.what() << std::endl;
+    exit(EXIT_FAILURE);
+  }
   return 0;
 }

@@ -1,6 +1,8 @@
 #include "BankAccount.h"
 
 #include <cmath>
+#include <iostream>
+#include <ostream>
 #include <string>
 #include <cstring>
 
@@ -19,20 +21,12 @@ void BankAccount::setAccountNumber(int accno)
 
 void BankAccount::setLastName(std::string lname)
 {
-  const char* ln = lname.data();
-  int len = lname.size();
-  len = (len < MAX_SIZE ? len : MAX_SIZE - 1);
-  strncpy(lastName, ln, len);
-  lastName[len] = '\0';
+  lastName = lname;
 }
 
 void BankAccount::setFirstName(std::string fname)
 {
-  const char* fn = fname.data();
-  int len = fname.size();
-  len = (len < MAX_SIZE ? len : MAX_SIZE - 1);
-  strncpy(firstName, fn, len);
-  firstName[len] = '\0';
+  firstName = fname;
 }
 
 void BankAccount::setBalance(double bal)

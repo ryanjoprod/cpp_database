@@ -6,5 +6,6 @@ My version of the program will be using the [MariaDB Connector](https://mariadb.
 
 ## How to use
 - run the code in the fakeBank.sql file to create the new database and table
+- in `main.cpp` replace `USER` and `PASSWORD` with your database username and password
 - compile the program using the following command: `g++ -o fakeBank BankAccount.h BankAccount.cpp BankTransaction.h BankTransaction.cpp main.cpp -std=c++20 -lmariadbcpp`
 - to execute the program, use the following command: `./fakeBank`
