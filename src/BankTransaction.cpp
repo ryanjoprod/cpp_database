@@ -1,3 +1,4 @@
+#include <ios>
 #include <iostream>
 #include <iomanip>
 #include <ostream>
@@ -134,15 +135,22 @@ void BankTransaction::printAllAccounts(const std::unique_ptr<sql::Connection> &c
 
     sql::ResultSet *res = stmnt->executeQuery();
 
-    std::cout << std::left << std::setw(10) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << '+' << '+' << std::endl;
-    std::cout << std::setfill(' ') << '|' << std::left << std::setw(9) << "Account" << std::setfill(' ') << '|' << std::setw(20) << "First Name" << std::setfill(' ') << '|' << std::setw(20) << "Last Name" << std::setfill(' ') << '|' << std::right << std::setw(20) << "Balance" << '|' << std::endl;
-    std::cout << std::left << std::setw(10) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << '+' << '+' << std::endl;
-
-    while(res->next()) {
-      std::cout << std::setfill(' ') << '|' << std::left << std::setw(9) << res->getInt(1) << std::setfill(' ') << '|' << std::setw(20) << res->getString(2).c_str() << std::setfill(' ') << '|' << std::setw(20) << res->getString(3).c_str() << std::setfill(' ') << '|' << std::right << std::setw(20) << res->getDouble(4) << '|' << std::endl;
+    if (res->rowsCount() == 0)
+    {
+      message("Database is empty.");
     }
+    else
+    {
+      std::cout << std::left << std::setw(10) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << '+' << '+' << std::endl;
+      std::cout << std::setfill(' ') << '|' << std::left << std::setw(9) << "Account" << std::setfill(' ') << '|' << std::setw(20) << "First Name" << std::setfill(' ') << '|' << std::setw(20) << "Last Name" << std::setfill(' ') << '|' << std::right << std::setw(20) << "Balance" << '|' << std::endl;
+      std::cout << std::left << std::setw(10) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << '+' << '+' << std::endl;
 
-    std::cout << std::left << std::setw(10) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << '+' << '+' << std::endl;
+      while(res->next()) {
+        std::cout << std::setfill(' ') << '|' << std::left << std::setw(9) << res->getInt(1) << std::setfill(' ') << '|' << std::setw(20) << res->getString(2).c_str() << std::setfill(' ') << '|' << std::setw(20) << res->getString(3).c_str() << std::setfill(' ') << '|' << std::right << std::setw(20) << std::setprecision(2) << std::fixed << res->getDouble(4) << '|' << std::endl;
+      }
+
+      std::cout << std::left << std::setw(10) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << std::left << '+' << std::setw(21) << std::setfill('-') << '+' << '+' << std::endl;
+    }
   }
   catch (sql::SQLException& e) {
     std::cerr << "Error printing all accounts! " << e.what() << std::endl;

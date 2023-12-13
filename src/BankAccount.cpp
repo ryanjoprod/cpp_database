@@ -1,10 +1,6 @@
 #include "BankAccount.h"
 
-#include <cmath>
-#include <iostream>
-#include <ostream>
 #include <string>
-#include <cstring>
 
 BankAccount::BankAccount(int accno, std::string fname, std::string lname, double bal)
 {

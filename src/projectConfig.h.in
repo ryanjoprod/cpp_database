@@ -1,0 +1,4 @@
+#define fakeBank_MAJOR_VERSION @fakeBank_MAJOR_VERSION@
+#define fakebank_MINOR_VERSION @fakeBank_MINOR_VERSION@
+
+// figure out how get input from the user
